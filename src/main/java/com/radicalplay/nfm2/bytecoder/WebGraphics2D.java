@@ -1,6 +1,8 @@
-package com.radicalplay.nfm2.teavm;
+package com.radicalplay.nfm2.bytecoder;
 
 import browser.OffscreenCanvas;
+import de.mirkosertic.bytecoder.api.web.CanvasRenderingContext2D;
+import de.mirkosertic.bytecoder.api.web.HTMLCanvasElement;
 import emul_java.awt.*;
 
 import emul_java.awt.geom.AffineTransform;
@@ -8,11 +10,6 @@ import emul_java.awt.geom.PathIterator;
 import emul_java.awt.geom.Rectangle2D;
 import emul_java.awt.image.ImageObserver;
 import java_impl.Drawable;
-import org.teavm.jso.JSObject;
-import org.teavm.jso.canvas.CanvasGradient;
-import org.teavm.jso.canvas.CanvasImageSource;
-import org.teavm.jso.canvas.CanvasRenderingContext2D;
-import org.teavm.jso.dom.html.HTMLCanvasElement;
 
 public class WebGraphics2D extends Graphics2D {
 
