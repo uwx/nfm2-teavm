@@ -764,9 +764,6 @@ public abstract class GameSparker extends GameSparkerCore {
     private int k2 = 0;
     private boolean flag2 = false;
 
-    protected NVGJSGraphics2D rd2;
-    protected abstract void flipBuffers();
-
     /**
      * @return milliseconds to wait
      */
@@ -1021,8 +1018,8 @@ public abstract class GameSparker extends GameSparkerCore {
                     amadness[k3].newcar = false;
                 }
             } while (++k3 < 7);
-            rd2.beginDraw();
-            Medium.d(rd2);
+//            rd2.beginDraw();
+            Medium.d(rd);
             k3 = 0;
             int ai2[] = new int[200];
             for (int k6 = 0; k6 < nob; k6++)
@@ -1030,7 +1027,7 @@ public abstract class GameSparker extends GameSparkerCore {
                     ai2[k3] = k6;
                     k3++;
                 } else {
-                    aconto1[k6].d(rd2);
+                    aconto1[k6].d(rd);
                 }
 
             int ai7[] = new int[k3];
@@ -1054,10 +1051,7 @@ public abstract class GameSparker extends GameSparkerCore {
             }
 
             for (int k12 = 0; k12 < k3; k12++)
-                aconto1[ai2[ai10[k12]]].d(rd2);
-
-            rd2.endDraw();
-            flipBuffers();
+                aconto1[ai2[ai10[k12]]].d(rd);
 
             if (xtgraphics.starcnt == 0) {
                 int l12 = 0;

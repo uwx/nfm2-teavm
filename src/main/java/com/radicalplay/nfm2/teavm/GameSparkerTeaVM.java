@@ -17,7 +17,6 @@ import org.teavm.jso.dom.html.HTMLDocument;
 
 public class GameSparkerTeaVM extends GameSparker {
     private final HTMLCanvasElement element;
-    private final HTMLCanvasElement nvgCanvas;
 
     public GameSparkerTeaVM() {
         Window window = Window.current();
@@ -41,18 +40,12 @@ public class GameSparkerTeaVM extends GameSparker {
             MouseEvent mouseEvent = (MouseEvent) event;
             mouseMove(null, (int) mouseEvent.getOffsetX(), (int) mouseEvent.getOffsetY());
         });
-
-        nvgCanvas = (HTMLCanvasElement) document.createElement("canvas");
-        rd2 = getNVGGraphics();
-        document.getBody().appendChild(nvgCanvas);
     }
 
     @Override
     protected Graphics getGraphics() {
         return new WebGraphics2D(element);
     }
-
-    protected NVGJSGraphics2D getNVGGraphics() { return new NVGJSGraphics2D(nvgCanvas); }
 
     @Override
     public Image createImage(int width, int height) {
@@ -73,9 +66,6 @@ public class GameSparkerTeaVM extends GameSparker {
     public void setSize(int width, int height) {
         element.setWidth(width);
         element.setHeight(height);
-        nvgCanvas.setWidth(width);
-        nvgCanvas.setHeight(height);
-        rd2 = getNVGGraphics();
     }
 
     @Override
@@ -127,10 +117,5 @@ public class GameSparkerTeaVM extends GameSparker {
     public interface JsFetchCallback extends JSObject {
         void complete(String result);
         void error(String message);
-    }
-
-    @Override
-    protected void flipBuffers() {
-        ((CanvasRenderingContext2D) element.getContext("2d")).drawImage(nvgCanvas, 0, 0);
     }
 }

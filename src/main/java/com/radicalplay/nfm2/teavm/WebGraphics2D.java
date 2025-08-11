@@ -11,19 +11,18 @@ import java_impl.Drawable;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.canvas.CanvasGradient;
 import org.teavm.jso.canvas.CanvasImageSource;
-import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 
 public class WebGraphics2D extends Graphics2D {
 
-	public CanvasRenderingContext2D context;
+	public CanvasRenderingContext2DEx context;
 
 	public WebGraphics2D(HTMLCanvasElement canvas) {
-		this.context = (CanvasRenderingContext2D) canvas.getContext("2d");
+		this.context = (CanvasRenderingContext2DEx) canvas.getContext("2d");
 	}
 
 	public WebGraphics2D(OffscreenCanvas canvas) {
-		this.context = (CanvasRenderingContext2D) canvas.getContext("2d");
+		this.context = (CanvasRenderingContext2DEx) canvas.getContext("2d");
 	}
 
 	@Override
@@ -80,7 +79,9 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		drawRect(x, y, width, height);
+		context.beginPath();
+		context.roundRect(x, y, width, height, arcWidth);
+		context.stroke();
 	}
 
 	@Override
@@ -92,15 +93,16 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		if (nPoints <= 0) {
+		if (nPoints <= 1 || (nPoints == 2 && xPoints[0] == xPoints[1] && yPoints[0] == yPoints[1])) {
 			return;
 		}
 		context.beginPath();
 		context.moveTo(xPoints[0], yPoints[0]);
-		for (int i = 0; i < nPoints; i++) {
+		for (int i = 1; i < nPoints; i++) {
+			if (xPoints[i - 1] == xPoints[i] && yPoints[i - 1] == yPoints[i]) continue;
 			context.lineTo(xPoints[i], yPoints[i]);
 		}
-		context.moveTo(xPoints[0], yPoints[0]);
+		context.lineTo(xPoints[0], yPoints[0]);
 		context.stroke();
 	}
 
@@ -136,12 +138,12 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-		if (nPoints <= 0) {
+		if (nPoints <= 1) {
 			return;
 		}
 		context.beginPath();
 		context.moveTo(xPoints[0], yPoints[0]);
-		for (int i = 0; i < nPoints; i++) {
+		for (int i = 1; i < nPoints; i++) {
 			context.lineTo(xPoints[i], yPoints[i]);
 		}
 		context.stroke();
@@ -219,25 +221,30 @@ public class WebGraphics2D extends Graphics2D {
 
 	public static CanvasImageSource getDrawableImage(Image img) {
 		if (img == null) {
-			throw new RuntimeException("Image is null!!");
+			System.err.println("Image is null!!");
+			return null;
 		}
 		CanvasImageSource drawableImage = ((Drawable) img).getDrawableImage();
 		if (drawableImage == null) {
-			throw new RuntimeException("Drawable image is null!!");
+			System.err.println("Drawable image is null!!");
 		}
 		return drawableImage;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), x, y);
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, x, y);
 		return true;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
 			Color bgcolor, ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), Math.min(sx1, sx2), Math.min(sy1, sy2), Math.abs(sx2 - sx1),
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, Math.min(sx1, sx2), Math.min(sy1, sy2), Math.abs(sx2 - sx1),
 				Math.abs(sy2 - sy1), Math.min(dx1, dx2), Math.min(dy1, dy2), Math.abs(dx2 - dx1), Math.abs(dy2 - dy1));
 		return true;
 	}
@@ -245,40 +252,69 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
 			ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), Math.min(sx1, sx2), Math.min(sy1, sy2), Math.abs(sx2 - sx1),
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, Math.min(sx1, sx2), Math.min(sy1, sy2), Math.abs(sx2 - sx1),
 				Math.abs(sy2 - sy1), Math.min(dx1, dx2), Math.min(dy1, dy2), Math.abs(dx2 - dx1), Math.abs(dy2 - dy1));
 		return true;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), x, y);
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, x, y);
 		return true;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), x, y, width, height);
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, x, y, width, height);
 		return true;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
-		context.drawImage(getDrawableImage(img), x, y, width, height);
+		CanvasImageSource drawableImage = getDrawableImage(img);
+		if (drawableImage == null) return false;
+		context.drawImage(drawableImage, x, y, width, height);
 		return true;
 	}
 
 	@Override
 	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		if (nPoints <= 0) {
+		if (nPoints <= 2) {
 			return;
 		}
-		context.beginPath();
-		context.moveTo(xPoints[0], yPoints[0]);
-		for (int i = 0; i < nPoints; i++) {
-			context.lineTo(xPoints[i], yPoints[i]);
+		// calculate centroid
+		double cx, cy;
+		{
+			int x = 0;
+			int y = 0;
+			for (int i = 0; i < nPoints; i++) {
+				x += xPoints[i];
+				y += yPoints[i];
+			}
+			cx = (double) x / nPoints;
+			cy = (double) y / nPoints;
 		}
-		context.lineTo(xPoints[0], yPoints[0]);
+
+		context.beginPath();
+		double sx = xPoints[0] < cx ? xPoints[0] - 0.5 : xPoints[0] + 0.5;
+		double sy = yPoints[0] < cy ? yPoints[0] - 0.5 : yPoints[0] + 0.5;
+		context.moveTo(sx, sy);
+		for (int i = 1; i < nPoints; i++) {
+			int x = xPoints[i];
+			int y = yPoints[i];
+			if (xPoints[i - 1] == x && yPoints[i - 1] == y) continue;
+			context.lineTo(
+					x < cx ? x - 0.5 : x + 0.5,
+					y < cy ? y - 0.5 : y + 0.5
+			);
+		}
+		context.lineTo(sx, sy);
 		context.fill();
 	}
 
@@ -338,7 +374,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public Rectangle getClipBounds() {
 		if (clip == null) {
-			return new Rectangle(0, 0, (int) context.getCanvas().getWidth(), (int) context.getCanvas().getHeight());
+			return new Rectangle(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
 		} else {
 			return clip.getBounds();
 		}
@@ -377,7 +413,9 @@ public class WebGraphics2D extends Graphics2D {
 
 	@Override
 	public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-		fillRect(x, y, width, height);
+		context.beginPath();
+		context.roundRect(x, y, width, height, arcWidth);
+		context.fill();
 	}
 
 	private Color color;
