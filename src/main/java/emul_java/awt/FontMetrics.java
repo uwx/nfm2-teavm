@@ -533,7 +533,7 @@ public abstract class FontMetrics implements java.io.Serializable {
     private TextMetrics getTextMetricsEx(String str, Graphics context) {
         if (context == null) {
             if (sharedGraphics == null) {
-                sharedGraphics = new WebGraphics2D(new OffscreenCanvas(69, 69));
+                sharedGraphics = new WebGraphics2D(OffscreenCanvas.create(69, 69));
             }
             context = sharedGraphics;
         }

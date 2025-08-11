@@ -1,34 +1,33 @@
 package browser;
 
-import org.teavm.jso.JSClass;
+import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.JSProperty;
 import org.teavm.jso.canvas.CanvasImageSource;
-import org.teavm.jso.dom.html.HTMLElement;
 
-@JSClass
-public class OffscreenCanvas implements CanvasImageSource {
-    public OffscreenCanvas(int width, int height) {}
-
-    @JSProperty
-    public native int getWidth();
+public abstract class OffscreenCanvas implements CanvasImageSource {
+    @JSBody(params = { "width", "height" }, script = "return new OffscreenCanvas(width, height);")
+    public static native OffscreenCanvas create(int width, int height);
 
     @JSProperty
-    public native void setWidth(int width);
+    public abstract int getWidth();
 
     @JSProperty
-    public native int getHeight();
+    public abstract void setWidth(int width);
 
     @JSProperty
-    public native void setHeight(int height);
+    public abstract int getHeight();
 
-    public native JSObject getContext(String contextId);
+    @JSProperty
+    public abstract void setHeight(int height);
 
-    public native JSObject getContext(String contextId, JSObject attributes);
+    public abstract JSObject getContext(String contextId);
 
-    public native String toDataURL(String type, double quality);
+    public abstract JSObject getContext(String contextId, JSObject attributes);
 
-    public native String toDataURL(String type);
+    public abstract String toDataURL(String type, double quality);
 
-    public native String toDataURL();
+    public abstract String toDataURL(String type);
+
+    public abstract String toDataURL();
 }
